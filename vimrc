@@ -114,7 +114,11 @@ if exists("syntax_on")
 syntax reset
 endif
 
+" mkdir -p ~/.vim/pack/themes/start
+" cd ~/.vim/pack/themes/start
+" git clone https://github.com/tomasiser/vim-code-dark
 colorscheme codedark
+
 " Fix codedark highlight color to match vs code
 highlight Search ctermbg=238
 highlight MatchParen ctermbg=238
@@ -170,7 +174,7 @@ autocmd FileType yaml setlocal comments=:\# commentstring=\#\ %s
 " Vim comments: https://github.com/tpope/vim-commentary
 " mkdir -p ~/.vim/pack/tpope/start
 " cd ~/.vim/pack/tpope/start
-" git clone https://tpope.io/vim/commentary.git
+" git clone https://tpope.io/vim/commentary.git ~/.vim/pack/git-plugins/start/commentary
 " vim -u NONE -c "helptags commentary/doc" -c q
 " To comment a block use 'gc'
 " VScode like commenting for normal and visual mode. Could never make that work
