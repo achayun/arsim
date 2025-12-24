@@ -10,7 +10,7 @@ config-version = 2
 after-startup-command = []
 
 # Start AeroSpace at login
-start-at-login = false
+start-at-login = true
 
 # Normalizations. See: https://nikitabobko.github.io/AeroSpace/guide#normalization
 enable-normalization-flatten-containers = true
@@ -39,7 +39,7 @@ on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 # You can effectively turn off macOS "Hide application" (cmd-h) feature by toggling this flag
 # Useful if you don't use this macOS feature, but accidentally hit cmd-h or cmd-alt-h key
 # Also see: https://nikitabobko.github.io/AeroSpace/goodies#disable-hide-app
-automatically-unhide-macos-hidden-apps = false
+automatically-unhide-macos-hidden-apps = true
 
 # List of workspaces that should stay alive even when they contain no windows,
 # even when they are invisible.
@@ -222,17 +222,23 @@ on-mode-changed = []
     1 = ['DELL S3423DWC']
     Q = ['built-in']
 
+# Messaging grouped on Workspace Q
+
 [[on-window-detected]]
-    if.app-name-regex-substring = 'Slack'
+    if.app-name-regex-substring = 'Slack|Calendar|Mail|Thunderbird'
     check-further-callbacks = true
     run = ['move-node-to-workspace Q']
 
-[[on-window-detected]]
-    if.app-name-regex-substring = 'Thunderbird'
-    check-further-callbacks = true
-    run = ['move-node-to-workspace Q']
+# Conferencing usually placed on Workspace 4
 
 [[on-window-detected]]
-    if.app-name-regex-substring = 'zoom'
+    if.app-name-regex-substring = "^(Zoom|Microsoft Teams)$"
     check-further-callbacks = true
     run = ['move-node-to-workspace 4']
+
+# Development tools on Workspace 2
+[[on-window-detected]]
+    if.app-name-regex-substring = 'Code'
+    check-further-callbacks = true
+    run = ['move-node-to-workspace 2']
+
