@@ -1,8 +1,8 @@
-# User extensions to .bashrc
+# Setup interactive SSH sessions to automatically run inside tmux
 
 
-# Not interactive, bye
-[[ $- != *i* ]] && return
+# Not interactive ssh session, bye
+[[ $- != *i* ]] || [ -z "$SSH_CLIENT" ] && return
 
 # All SSH connections should be inside tmux
 if [ -n "$PS1" ] && [ -z "$TMUX" ] && [ -n "$SSH_CONNECTION" ]; then

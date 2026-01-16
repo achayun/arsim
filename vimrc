@@ -83,10 +83,20 @@ function! ProjectSpellFile()
   endif
 endfunction
 
-set spell spelllang=en_us
+" Run :verbose set spell, vim will try to download missing spell files
+set spell spelllang=en_us,he
 set spellcapcheck= " don't check for capitalization
 let s:current_file_path = fnamemodify(resolve(expand("<sfile>:p")), ":h")
 autocmd BufReadPost * call ProjectSpellFile()
+
+let g:ale_linters = {
+\   'markdown': ['textlint'],
+\   'text': ['textlint'],
+\}
+
+let g:ale_fixers = {
+\   'markdown': ['textlint'],
+\}
 
 " ## File explore in-buffer style
 " See: http://vimcasts.org/blog/2013/01/oil-and-vinegar-split-windows-and-project-drawer/
@@ -114,15 +124,31 @@ if exists("syntax_on")
 syntax reset
 endif
 
+" # Color themes. Make sure to bootstrap .vim/pack
 " mkdir -p ~/.vim/pack/themes/start
-" cd ~/.vim/pack/themes/start
-" git clone https://github.com/tomasiser/vim-code-dark
-colorscheme codedark
+" mkdir -p ~/.vim/pack/colors/start
+
+" ## Code Dark theme
+" git clone https://github.com/tomasiser/vim-code-dark ~/.vim/pack/themes/startvim-code-dark
+" colorscheme codedark
 
 " Fix codedark highlight color to match vs code
-highlight Search ctermbg=238
-highlight MatchParen ctermbg=238
-" highlight MatchParen ctermfg=Green ctermbg=None
+" highlight Search ctermbg=238
+" highlight MatchParen ctermbg=238
+" " highlight MatchParen ctermfg=Green ctermbg=None
+" ###
+
+" # Gruvbox
+" git clone https://github.com/morhetz/gruvbox.git ~/.vim/pack/colors/start/gruvbox
+set background=dark
+
+let g:gruvbox_contrast_dark = 'medium'
+let g:gruvbox_contrast_light = 'medium'
+
+colorscheme gruvbox
+" Default marksown syntax parser is extremely strict, tone down its errors
+highlight markdownError guifg=NONE guibg=NONE ctermfg=NONE ctermbg=NONE
+" ###
 
 " Highlight trailing whitespaces - after defining colorscheme!
 au BufEnter * match ExtraWhitespace /\s\+$/

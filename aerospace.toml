@@ -218,6 +218,11 @@ on-mode-changed = []
     alt-shift-k = ['join-with up', 'mode main']
     alt-shift-l = ['join-with right', 'mode main']
 
+# Workspace mapping:
+# 1-9 - main general purpose workspaces
+# Q,W,E,R,T - secondary monitor workspaces
+# A, S, D, F, G - per task workspaces (say 'D' for development)
+
 [workspace-to-monitor-force-assignment]
     1 = ['DELL S3423DWC']
     Q = ['built-in']
@@ -232,13 +237,23 @@ on-mode-changed = []
 # Conferencing usually placed on Workspace 4
 
 [[on-window-detected]]
-    if.app-name-regex-substring = "^(Zoom|Microsoft Teams)$"
+    if.app-name-regex-substring = "^(Zoom|Microsoft Teams|Discord)$"
     check-further-callbacks = true
-    run = ['move-node-to-workspace 4']
+    run = ['move-node-to-workspace F']
 
 # Development tools on Workspace 2
 [[on-window-detected]]
     if.app-name-regex-substring = 'Code'
     check-further-callbacks = true
-    run = ['move-node-to-workspace 2']
+    run = ['move-node-to-workspace D']
 
+[[on-window-detected]]
+    if.app-name-regex-substring = 'kitty'
+    if.window-title-regex-substring = 'tenstorrent-dev'
+    check-further-callbacks = true
+    run = ['move-node-to-workspace D']
+
+[[on-window-detected]]
+if.app-id = 'com.google.Chrome'
+if.window-title-regex-substring = 'Incognito'
+run = 'move-node-to-workspace A'
