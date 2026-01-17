@@ -7,7 +7,7 @@ TIMEOUT=60
 MAINMOD=""
 get_binds() {
 	grep '^bindd' "$HYPRCONF" | sed 's/^bindd = //g' | while read -r line; do
-		MOD=$(echo "$line" | cut -d',' -f1 | xargs | sed "s/\$mainMod\s*/$MAINMOD+/")
+		MOD=$(echo "$line" | cut -d',' -f1 | xargs | sed "s/\$mainMod\s*/$MAINMOD /")
 		KEY=$(echo "$line" | cut -d',' -f2 | xargs)
 		DESC=$(echo "$line" | cut -d',' -f3 | xargs)
 		CMD=$(echo "$line" | cut -d',' -f4 | xargs)
