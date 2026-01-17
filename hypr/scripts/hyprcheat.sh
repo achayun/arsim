@@ -4,10 +4,10 @@ HYPRCONF="$HOME/.config/hypr/hyprland.conf"
 TIMEOUT=60
 
 # TODO: Parse from config
-MAINMOD=""
+SUPER=""
 get_binds() {
 	grep '^bindd' "$HYPRCONF" | sed 's/^bindd = //g' | while read -r line; do
-		MOD=$(echo "$line" | cut -d',' -f1 | xargs | sed "s/\$mainMod\s*/$MAINMOD /")
+		MOD=$(echo "$line" | cut -d',' -f1 | xargs | sed "s/SUPER\s*/$SUPER /")
 		KEY=$(echo "$line" | cut -d',' -f2 | xargs)
 		DESC=$(echo "$line" | cut -d',' -f3 | xargs)
 		CMD=$(echo "$line" | cut -d',' -f4 | xargs)
