@@ -5,10 +5,11 @@ TIMEOUT=60
 
 # TODO: Parse from config
 SUPER=""
+MOUSE="🖱"
 get_binds() {
-	grep '^bindd' "$HYPRCONF" | sed 's/^bindd = //g' | while read -r line; do
+	grep -e '^\s*bindm\?d' "$HYPRCONF" | sed 's/^\s*bind[^ ]* = //g' | while read -r line; do
 		MOD=$(echo "$line" | cut -d',' -f1 | xargs | sed "s/SUPER\s*/$SUPER /")
-		KEY=$(echo "$line" | cut -d',' -f2 | xargs)
+	 	KEY=$(echo "$line" | cut -d',' -f2 | xargs | sed "s/mouse:272/$MOUSE(L)/" | sed "s/mouse:273/$MOUSE(R)"/)
 		DESC=$(echo "$line" | cut -d',' -f3 | xargs)
 		CMD=$(echo "$line" | cut -d',' -f4 | xargs)
 		APP=$(echo "$line" | cut -d',' -f5 | xargs)
