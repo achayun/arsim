@@ -11,7 +11,7 @@
 
     "modules-left": ["custom/launcher", "hyprland/workspaces", "hyprland/window"],
     "modules-center": ["clock"],
-    "modules-right": ["custom/updates", "backlight", "custom/keyboard-layout", "custom/sensors", "cpu", "memory", "pulseaudio", "tray", "idle_inhibitor", "custom/power"],
+    "modules-right": ["custom/updates", "custom/keyboard-layout", "custom/network_traffic", "custom/sensors", "cpu", "memory", "pulseaudio", "tray", "idle_inhibitor", "custom/power"],
 
  // Modules configuration
 
