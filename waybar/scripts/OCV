@@ -6,4 +6,4 @@ yad --width=400 --height=200 \
 --title="Calendar" \
 --no-buttons \
 yad \
-           --calendar
+           --calendar --date-format=%Y-%m-%d --details=/home/amic/events.txt
