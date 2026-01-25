@@ -84,7 +84,7 @@ function! ProjectSpellFile()
 endfunction
 
 " Run :verbose set spell, vim will try to download missing spell files
-set spell spelllang=en_us,he
+set spell spelllang=en_us
 set spellcapcheck= " don't check for capitalization
 let s:current_file_path = fnamemodify(resolve(expand("<sfile>:p")), ":h")
 autocmd BufReadPost * call ProjectSpellFile()
@@ -101,7 +101,6 @@ let g:ale_fixers = {
 " ## File explore in-buffer style
 " See: http://vimcasts.org/blog/2013/01/oil-and-vinegar-split-windows-and-project-drawer/
 " Enhanced netrw with vinegar: https://github.com/tpope/vim-vinegar
-" mkdir -p ~/.vim/pack/tpope/start
 " cd ~/.vim/pack/tpope/start
 " git clone https://github.com/tpope/vim-vinegar.git
 " In case you don't use vinegar, set netrw to behave nicer
@@ -124,10 +123,6 @@ if exists("syntax_on")
 syntax reset
 endif
 
-" # Color themes. Make sure to bootstrap .vim/pack
-" mkdir -p ~/.vim/pack/themes/start
-" mkdir -p ~/.vim/pack/colors/start
-
 " ## Code Dark theme
 " git clone https://github.com/tomasiser/vim-code-dark ~/.vim/pack/themes/startvim-code-dark
 " colorscheme codedark
@@ -142,8 +137,8 @@ endif
 " git clone https://github.com/morhetz/gruvbox.git ~/.vim/pack/colors/start/gruvbox
 set background=dark
 
-let g:gruvbox_contrast_dark = 'medium'
-let g:gruvbox_contrast_light = 'medium'
+let g:gruvbox_contrast_dark = 'hard'
+let g:gruvbox_contrast_light = 'hard'
 
 colorscheme gruvbox
 " Default marksown syntax parser is extremely strict, tone down its errors
@@ -164,7 +159,6 @@ map <F7> :make! build<CR>
 map <F5> :make! run<CR>
 
 " ## ALE - https://github.com/dense-analysis/ale
-" mkdir -p ~/.vim/pack/git-plugins/start
 " git clone --depth 1 https://github.com/dense-analysis/ale.git ~/.vim/pack/git-plugins/start/ale
 " Always use project linters, but install system wide for:
 " brew install yamllint jsonlint
