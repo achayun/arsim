@@ -6,6 +6,9 @@ set nocompatible
 syntax enable
 filetype indent on
 
+" Ok, I give up
+set number
+
 " Unmap Q as ex mode
 map Q <Nop>
 
@@ -25,6 +28,10 @@ let &t_SI = "\e[5 q" " Insert mode - bar
 let &t_EI = "\e[2 q" " Normal mode - block
 let &t_SR = "\e[5 q" " Replace mode - bar
 endif
+
+" Keep cursor aligned with page navigation
+" nnoremap <PageDown> <C-f>zz
+" nnoremap <PageUp>   <C-b>zz
 
 " Make sure viminfo keeps a lot of history
 set viminfo='10,\"100,:2000,%
@@ -62,14 +69,15 @@ cnoremap <C-a> <Home>
 cnoremap <C-e> <End>
 
 " Utility function to find git root, used later in several functions
-function! FindGitRoot()
-  let l:gitroot = system('git -C ' . expand('%:p:h') . ' rev-parse --show-toplevel' . '2> /dev/null')
-  if v:shell_error == 0 " Check if git command was successful
-    let l:gitroot = substitute(l:gitroot, '\n\+$', '', '') " Trim newline
+function! FindGitRoot() abort
+  let l:dir = expand('%:p:h')
+  let l:cmd = 'git -C ' . shellescape(l:dir) . ' rev-parse --show-toplevel 2>/dev/null'
+  let l:out = system(l:cmd)
+  if v:shell_error == 0
+    let l:gitroot = substitute(l:out, '\n\+$', '', '')
     return l:gitroot
-  else
-    return '' " Return empty string if not in a git repo
   endif
+  return ''
 endfunction
 
 " ## Spellcheck. Add languages as needed.
@@ -135,13 +143,12 @@ endif
 
 " # Gruvbox
 " git clone https://github.com/morhetz/gruvbox.git ~/.vim/pack/colors/start/gruvbox
-set background=dark
-
+" Theme contrast - Use 'hard' or Switch to 'medium' if you have a good monitor
 let g:gruvbox_contrast_dark = 'hard'
 let g:gruvbox_contrast_light = 'hard'
-
 colorscheme gruvbox
-" Default marksown syntax parser is extremely strict, tone down its errors
+
+" Default markdown syntax parser is extremely strict, tone down its errors
 highlight markdownError guifg=NONE guibg=NONE ctermfg=NONE ctermbg=NONE
 " ###
 
@@ -152,11 +159,8 @@ au InsertLeave * match ExtraWhiteSpace /\s\+$/
 " Add color to colorscheme
 hi ExtraWhitespace ctermbg=lightred guibg=lightred
 
-
-" ## Productivity - Function key shortcuts
-" Note: We add ! to make in order to disable vim trying to jump by itself if there are no errors
-map <F7> :make! build<CR>
-map <F5> :make! run<CR>
+" Curly underline still breaks in 2026. Re-evaluate in a few years I guess
+hi SpellBad cterm=underline gui=underline guisp=#ff5f5f
 
 " ## ALE - https://github.com/dense-analysis/ale
 " git clone --depth 1 https://github.com/dense-analysis/ale.git ~/.vim/pack/git-plugins/start/ale
@@ -168,7 +172,9 @@ let g:ale_fix_on_save = 1
 let g:ale_lint_on_text_changed = 'always'
 let g:ale_lint_on_insert_leave = 1
 let g:ale_lint_delay = 200 " milliseconds
-autocmd CursorHold * ALEHover
+
+" If you want the preview pane opened when cursor holds on a definition
+" autocmd CursorHold * ALEHover
 
 " Show linter name in the message
 let g:ale_virtualtext_prefix = '[%linter%] '
@@ -176,7 +182,18 @@ let g:ale_virtualtext_prefix = '[%linter%] '
 
 highlight ALEWarning ctermfg=208 guifg=#FFA500
 
-" Typescript - Don't try to guess what linters to use or the eslint config.
+" ALE: C/C++ - use clangd only
+let g:ale_linters = {
+\ 'c':   ['clangd'],
+\ 'cpp': ['clangd'],
+\}
+let g:ale_fixers = {
+\ 'c':   ['clang-format'],
+\ 'cpp': ['clang-format'],
+\}
+let g:ale_c_clangd_options = '--background-index --header-insertion=never --completion-style=detailed'
+
+" ALE: Typescript - Don't try to guess what linters to use or the eslint config.
 let g:ale_linters = {
 \   'typescript': ['eslint', 'tsserver', 'prettier'],
 \}
@@ -185,6 +202,20 @@ let g:ale_fixers = {
 \}
 let g:ale_javascript_eslint_use_global = 0
 let g:ale_typescript_eslint_use_global = 0
+
+" ALE: completion
+let g:ale_completion_enabled = 1
+set omnifunc=ale#completion#OmniFunc
+
+" ALE: Completion UI
+set completeopt=menu,menuone,noselect
+set shortmess+=c
+
+" ALE: Go to definition
+nnoremap gD :ALEGoToDefinitionInTab<CR>
+nnoremap gr :ALEFindReferences<CR>
+nnoremap gi :ALEGoToImplementation<CR>
+nnoremap <C-]> :ALEGoToDefinition<CR>
 
 " Fix Vim's own vimscript comments, no idea why it doesn't always work
 autocmd FileType vim setlocal comments=:\" commentstring=\"\ %s
@@ -218,6 +249,26 @@ augroup GitAutosaveOnIdle
     autocmd CursorHold,InsertLeave * if &modifiable && &buftype == '' && getbufvar('%', '&modified') && IsGitTracked(expand('%:p'))| silent! write | endif
 augroup END
 
+" C header template
+augroup header_template
+  autocmd!
+  autocmd BufNewFile *.h call s:InsertHeaderGuard()
+augroup END
+
+function! s:InsertHeaderGuard()
+  let l:name = toupper(expand('%:t:r'))
+  let l:guard = l:name . '_H'
+
+  call setline(1, [
+        \ '#ifndef ' . l:guard,
+        \ '#define ' . l:guard,
+        \ '',
+        \ '',
+        \ '#endif // ' . l:guard
+        \ ])
+
+  call cursor(3,1)
+endfunction
 
 " Commands I need to memorize:
 " a. Yank and use in command:
