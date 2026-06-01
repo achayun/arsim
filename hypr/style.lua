@@ -24,6 +24,7 @@ local function gtk_config(s)
     hl.exec_cmd(string.format([["gsettings set org.gnome.desktop.interface gtk-theme '%s'"]], s.gtk.gtk_theme))
     hl.exec_cmd(string.format([["gsettings set org.gnome.desktop.interface color-scheme '%s'"]], s.gtk.color_theme))
     hl.exec_cmd(string.format([["gsettings set org.gnome.desktop.interface icon-theme '%s'"]], s.gtk.icon_theme))
+    hl.exec_cmd(string.format([["gsettings set org.gnome.desktop.interface font-name '%s %s'"]], s.font.ui, s.font.size.gtk_pt or 11))
 end
 
 local function apply_global_style(s)

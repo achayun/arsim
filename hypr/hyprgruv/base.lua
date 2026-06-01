@@ -18,6 +18,7 @@ return {
       bar = 15,
       ui = 14,
       mono = 13,
+      gtk_pt = 11,
     },
 
     weight = {

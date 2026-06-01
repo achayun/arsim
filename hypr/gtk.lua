@@ -82,7 +82,7 @@ function M.settings_ini(style)
         "gtk-icon-theme-name=" .. icon_theme,
         "gtk-cursor-theme-name=" .. cursor_theme,
         "gtk-cursor-theme-size=" .. tostring(cursor_size),
-        "gtk-font-name=" .. style.font.ui .. " " .. tostring(style.font.size.ui or style.font.size.bar or 14),
+        "gtk-font-name=" .. style.font.ui .. " " .. tostring(style.font.size.gtk_pt or style.font.size.ui or 11),
         "gtk-decoration-layout=menu:close",
         "",
     }, "\n")
