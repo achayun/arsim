@@ -15,7 +15,7 @@
 
 window#waybar {
     color: #ebdbb2;
-    background: rgba(40, 40, 40, 0.960);
+    background: rgba(29, 32, 33, 0.960);
 }
 
 /* Remove Waybar's default hover weirdness. */
@@ -45,10 +45,10 @@ window#waybar {
 #custom-notification,
 #custom-updates {
     color: #ebdbb2;
-    background: #3c3836;
-    border-radius: 4px;
+    background: #32302f;
+    border-radius: 3px;
     padding: 3px 8px;
-    margin: 4px 3px;
+    margin: 4px 2px;
 }
 
 /* Workspaces are a capsule containing smaller pills. */
@@ -59,8 +59,8 @@ window#waybar {
 #workspaces button {
     color: #a89984;
     background: transparent;
-    border-radius: 0px;
-    padding: 0 6px;
+    border-radius: 3px;
+    padding: 0 7px;
     margin: 0 1px;
 }
 
@@ -73,23 +73,23 @@ window#waybar {
 }
 
 #workspaces button.visible {
-    color: #8ec07c;
+    color: #d5c4a1;
     background: transparent;
 }
 
 #workspaces button.active {
-    color: #83a598;
+    color: #fbf1c7;
     background: #504945;
 }
 
 #workspaces button.special {
-    color: #8ec07c;
+    color: #d5c4a1;
     background: transparent;
 }
 
 #workspaces button.urgent {
     color: #282828;
-    background: #fb4934;
+    background: #722529;
 }
 
 /* Current focused window title. */
@@ -100,7 +100,7 @@ window#waybar {
 
 /* Common status modules. */
 #clock {
-    color: #83a598;
+    color: #d79921;
 }
 
 #battery {
@@ -145,7 +145,7 @@ window#waybar {
 tooltip {
     color: #ebdbb2;
     background: rgba(40, 40, 40, 0.950);
-    border: 1px solid #83a598;
+    border: 1px solid #665c54;
     border-radius: 0px;
 }
 

@@ -288,22 +288,21 @@ local function theme_colors(style)
         tab_background_text = rgb(c.muted or c.disabled),
         tab_background_text_inactive = rgb(c.disabled or c.muted),
         toolbar_button_icon = rgb(c.fg),
-
         -- Incognito.
-        frame_incognito = rgb(incognito_frame),
-        frame_incognito_inactive = rgb(incognito_frame_inactive),
+        frame_incognito = rgb(c.incognito or c.surface_alt or c.surface),
+        frame_incognito_inactive = rgb(c.incognito_muted or c.bg or c.bg_hard),
         tab_background_text_incognito = rgb(c.fg_strong or c.fg),
         tab_background_text_incognito_inactive = rgb(c.muted or c.disabled),
 
         -- Omnibox.
-        omnibox_text = rgb(c.accent_alt or c.accent or c.fg),
+        omnibox_text = rgb(c.fg),
         omnibox_background = rgb(c.bg),
 
         -- New tab page.
         ntp_background = rgb(c.bg),
         ntp_header = rgb(c.surface or c.bg),
-        ntp_link = rgb(c.accent_alt or c.accent or c.fg),
-        ntp_text = rgb(c.muted or c.fg),
+        ntp_link = rgb(c.accent or c.accent_alt or c.fg),
+        ntp_text = rgb(c.fg_soft or c.fg),
     }
 end
 
