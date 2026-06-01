@@ -1,0 +1,21 @@
+-- Keyboard/Mouse settings
+hl.config({
+    input = {
+        -- Use fcitx5 for keyboad layouts
+        -- kb_layout  = "us",
+        -- kb_variant = "",
+        -- kb_model   = "",
+        -- kb_options = "",
+        -- kb_rules   = "",
+
+        follow_mouse = 1,
+
+        sensitivity = 0, -- -1.0 - 1.0, 0 means no modification.
+
+        -- Disable mouse acceleration (1:1 movement)
+        accel_profile = "flat",
+        touchpad = {
+            natural_scroll = false,
+        },
+    },
+})

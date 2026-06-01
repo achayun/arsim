@@ -1,1 +1,0 @@
-/home/amic/.config/hypr/scripts/hyprcheat.sh
