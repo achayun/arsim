@@ -45,8 +45,9 @@
      "separate-outputs": true,
  },
  "clock": {
+     // https://github.com/Alexays/Waybar/wiki/Module:-Clock
      "tooltip-format": "<big>{:%A, %d.%B %Y }</big>\n<tt><small>{calendar}</small></tt>",
-     "format": " {:%a %d %b  %H:%M}",    //24 hour format
+     "format": "{:L%A%x  %H:%M}",    //24 hour format
      // "format-alt": " {:%d/%m/%Y  %H:%M:%S}",   // Enable seconds
      "interval": 1,
      "on-click": "~/.config/waybar/scripts/OCV"
@@ -92,10 +93,10 @@
  },
  "pulseaudio": {
      "scroll-step": 3, // %, can be a float
-     "format": "{icon}{volume}%{format_source}",
-     "format-bluetooth": "{icon}{volume}% {format_source}",
-     "format-bluetooth-muted": " {icon} {format_source}",
-     "format-muted": " {format_source}",
+     "format": "{icon} {volume}%{format_source}",
+     "format-bluetooth": "{icon} {volume}% {format_source}",
+     "format-bluetooth-muted": "{icon}  {format_source}",
+     "format-muted": "{icon}  {format_source}",
      "format-source": "",
      "format-source-muted": "",
      "format-icons": {
@@ -105,7 +106,7 @@
          "phone": "",
          "portable": "",
          "car": "",
-         "default": ["", "", ""]
+         "default": "󰓃"
      },
      "on-click": "pavucontrol"
  },
