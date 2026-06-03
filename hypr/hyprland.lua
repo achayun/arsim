@@ -33,7 +33,7 @@ require("cursor").apply(theme)
 gtk.write(theme)
 require("shell").write(theme, shell)
 require("hyprlock").write(theme, {
-    wallpaper = os.getenv("HOME") .. "/dev/arsim/hypr/hyprgruv/wallpapers/peter-thomas-qqc8LV95_0w-unsplash.jpg",
+    wallpaper = os.getenv("HOME") .. "/dev/arsim/hypr/hyprgruv/wallpapers/peter-thomas-qqc8LV95_0w-unsplash.jpg"
 })
 
 require("mako").write(theme)
@@ -43,7 +43,7 @@ end
 
 if starts_with(browser, "google-chrome") then
     local chrome_wallpaper = {
-        path = os.getenv("HOME") .. "/.config/hypr/hyprgruv/wallpapers/footer_lodyas.png",
+        path = os.getenv("HOME") .. "/.config/hypr/hyprgruv/wallpapers/cartographer.png",
         repeat_policy = "repeat", -- "no-repeat", "repeat", "repeat-x", "repeat-y"
         -- alignment = "bottom",        -- "center", "bottom", "top", etc.
         logo_alternate = 1,

@@ -42,12 +42,12 @@
  "hyprland/window": {
      "format": "{}",
      "icon":true,
-     "separate-outputs": true,
+     "separate-outputs": true
  },
  "clock": {
      // https://github.com/Alexays/Waybar/wiki/Module:-Clock
      "tooltip-format": "<big>{:%A, %d.%B %Y }</big>\n<tt><small>{calendar}</small></tt>",
-     "format": "{:L%A%x  %H:%M}",    //24 hour format
+     "format": "{:L%x%A  %H:%M}",    //24 hour format
      // "format-alt": " {:%d/%m/%Y  %H:%M:%S}",   // Enable seconds
      "interval": 1,
      "on-click": "~/.config/waybar/scripts/OCV"
