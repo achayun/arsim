@@ -1,0 +1,4 @@
+[submodule "hypr/hyprgruv/icons/bibata_cursor/Bibata_Cursor"]
+	path = hypr/hyprgruv/icons/bibata_cursor/Bibata_Cursor
+    url = https://github.com/ful1e5/Bibata_Cursor.git
+    shallow = true
