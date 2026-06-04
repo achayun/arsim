@@ -28,7 +28,10 @@ local gtk = require("gtk")
 style(theme)
 waybar.write(theme)
 nwgbar.write(theme)
-hyprtoolkit.write(theme)
+
+-- TODO: Hyprtoolkit write causes 100% CPU for hyprpaper and hyprlauncher
+-- hyprtoolkit.write(theme)
+
 require("cursor").apply(theme)
 gtk.write(theme)
 require("shell").write(theme, shell)
