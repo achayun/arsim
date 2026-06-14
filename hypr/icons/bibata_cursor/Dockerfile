@@ -1,8 +1,11 @@
 FROM archlinux:latest
 
-RUN pacman -Syu --noconfirm \
+RUN pacman-key --init \
+ && pacman-key --populate archlinux \
+ && pacman -Syu --noconfirm \
       bash \
       git \
+      jq \
       make \
       nodejs \
       npm \

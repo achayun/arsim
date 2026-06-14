@@ -203,8 +203,30 @@ return {
       theme = "Papirus-Dark"
   },
   cursor = {
-      theme = "Bibata-Gruvbox", -- "Bibata-Modern-Classic",
-      size = 24
+      theme = "Bibata-Gruvbox-Modern", -- "Bibata-Modern-Classic",
+      size = 24,
+
+      -- Bibata Cursor plugin - will generate custom cursor and install
+      bibata = {
+          -- Bibata currently produces XCursors in this flow. Do not pretend this is a
+          -- hyprcursor theme unless you add a real hyprcursor conversion step later.
+          backend = "xcursor",
+
+          -- Canonical Bibata sub-style. Flavors can override these only.
+          shape = "modern",          -- "modern" | "original"
+          orientation = "normal",    -- "normal" | "right"
+
+          -- Build only what you use by default. Use {16, 20, 24, 32, 48} if you want
+          -- a reusable package instead of a personal desktop theme.
+          sizes = { 24 },
+
+          colors = {
+              -- Bibata color indexes:
+              base = c.dark0_hard,  --   #00FF00 -> base cursor body
+              outline = c.light2,   --   #0000FF -> outline
+              watch = c.dark0,      --   #FF0000 -> watch / wait background
+          },
+      },
   },
   gtk = {
       gtk_theme = "Adwaita-dark",

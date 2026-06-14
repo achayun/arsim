@@ -10,7 +10,7 @@ TEMP2=$(echo "$DATA" | jq '."it8792-isa-0a60".temp2.temp2_input | round')
 POWER=$(echo "$DATA" | jq 'to_entries[] | select(.key | startswith("corsairpsu-hid-")) | .value."power total".power1_input | round')
 
 # Output for Waybar
-echo "{\"text\": \" $TEMP1° ⌂$TEMP2° |  ${POWER}W\", \"tooltip\": \"IT87 Temp1: $TEMP1°C\nIT87 Temp2: $TEMP2°C\nPSU Power: ${POWER}W\"}"
+echo "{\"text\": \" 󰇅 $TEMP1° 󰽔$TEMP2° |  ${POWER}W\", \"tooltip\": \"IT87 Temp1: $TEMP1°C\nIT87 Temp2: $TEMP2°C\nPSU Power: ${POWER}W\"}"
 
 # Another way for waybar to get temperatures from source
 # 
