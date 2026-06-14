@@ -19,6 +19,7 @@ require("steam")
 -- Look and feel
 local theme = require("hyprgruv/base")
 -- local theme = require("hyprgruv/accents/orange_yellow")
+-- local theme = require("hyprgruv/accents/green_teal")
 local style = require("style")
 local waybar = require("waybar")
 local nwgbar = require("nwgbar")

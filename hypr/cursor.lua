@@ -152,12 +152,20 @@ function M.write_render_json(cfg)
   return path
 end
 
+local function current_script_dir()
+    local source = debug.getinfo(2, "S").source
+    local path = source:sub(2)
+    return path:match("^(.*)/") or "."
+end
+
 function M.compile_bibata_cursor(style)
   local cfg = cursor_cfg(style)
   local path = M.write_render_json(cfg)
-  local theme_path = "icons/bibata_cursor"
+  local script_dir = current_script_dir()
+  local theme_path = script_dir .. "/icons/bibata_cursor"
+
   hl.exec_cmd(string.format(
-    "make -C %s cusror-build RENDER_JSON=%s",
+    "make -C %s cursor-build RENDER_JSON=%s",
     shell_quote(theme_path),
     shell_quote(path)
   ))
