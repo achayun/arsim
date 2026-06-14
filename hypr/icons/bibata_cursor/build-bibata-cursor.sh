@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-: "${SRC:?SRC is required}"
 : "${OUT:?OUT is required}"
 : "${COMMENT:?COMMENT is required}"
 : "${RENDER_JSON:?RENDER_JSON file is required}"
@@ -14,7 +13,7 @@ mkdir -p "$work"
 
 # Copy instead of building inside the mounted source.
 # Keeps the git submodule clean.
-rsync -a --delete "$SRC"/ "$work"/
+rsync -a --delete /src/ "$work"/
 cd "$work"
 
 # Phase 1: customize SVG files
@@ -30,13 +29,14 @@ bitmap_dir="bitmaps/$NAME"
 
 rm -rf "$bitmap_dir" "themes/$NAME"
 
-npx cbmp $RENDER_JSON
+npx --no-install cbmp $RENDER_JSON
 
 # Phase 2: render to bitmaps (PNG)
+svg_dir=$(jq -r 'to_entries[0].value.dir' "$RENDER_JSON")
 if [[ "$svg_dir" == *-right ]]; then
-    build_toml="configs/right/x.build.toml"
+    build_toml="Bibata_Cursor/configs/right/x.build.toml"
 else
-    build_toml="configs/normal/x.build.toml"
+    build_toml="Bibata_Cursor/configs/normal/x.build.toml"
 fi
 
 if [ ! -f $build_toml ]; then

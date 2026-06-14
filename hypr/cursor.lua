@@ -90,7 +90,7 @@ local function cursor_cfg(style)
     die("style.cursor.bibata.orientation must be 'normal' or 'right'")
   end
 
-  local dir = "svg/" .. shape .. (orientation == "right" and "-right" or "")
+  local dir = "Bibata_Cursor/svg/" .. shape .. (orientation == "right" and "-right" or "")
 
   local base = assert_hex("style.cursor.bibata.colors.base", colors.base or style.color.bg_hard or style.color.bg)
   local outline = assert_hex("style.cursor.bibata.colors.outline", colors.outline or style.color.fg or style.color.fg_strong)
@@ -155,20 +155,18 @@ end
 function M.compile_bibata_cursor(style)
   local cfg = cursor_cfg(style)
   local path = M.write_render_json(cfg)
-  local theme_path = 
+  local theme_path = "icons/bibata_cursor"
   hl.exec_cmd(string.format(
     "make -C %s cusror-build RENDER_JSON=%s",
     shell_quote(theme_path),
     shell_quote(path)
   ))
-
-  return cfg
 end
 
 function M.apply(style)
     -- Custom generated Bibata Cursor plugin
     if style.cursor.bibata ~= nil then
-        local cfg = M.compile_bibata_cursor(style)
+        M.compile_bibata_cursor(style)
     end
 
     -- Xcursor (Hyprcusror) env
