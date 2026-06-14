@@ -22,7 +22,7 @@ COPY Bibata_Cursor/package.json ./
 RUN PUPPETEER_SKIP_DOWNLOAD=1 npm install ful1e5/cbmp
 
 COPY Bibata_Cursor Bibata_Cursor
-COPY build-bibata-cursor.sh /usr/local/bin/build-bibata-cursor
-RUN chmod +x /usr/local/bin/build-bibata-cursor
+COPY build-bibata-cursor.sh ./
+RUN chmod +x ./build-bibata-cursor.sh
 
-ENTRYPOINT ["/usr/local/bin/build-bibata-cursor"]
+ENTRYPOINT ["./build-bibata-cursor.sh"]

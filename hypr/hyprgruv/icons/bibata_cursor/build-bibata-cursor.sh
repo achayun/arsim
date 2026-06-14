@@ -4,11 +4,9 @@ set -euo pipefail
 : "${SRC:?SRC is required}"
 : "${OUT:?OUT is required}"
 : "${NAME:?NAME is required}"
-: "${STYLE:=modern}"
-: "${BASE:?BASE is required}"
-: "${OUTLINE:?OUTLINE is required}"
-: "${WATCH:=$BASE}"
-: "${SIZE:=24}"
+: "${COMMENT:=?COMMENT is required}"
+: "${RENDER_JSON:=?render.json file is required}"
+: "${SIZE:=16 18 24 32}"
 
 work=/tmp/bibata-work
 
@@ -21,59 +19,37 @@ rsync -a --delete "$SRC"/ "$work"/
 
 cd "$work"
 
-# Install repo-local node dependencies if package.json exists.
-# This keeps us aligned with the repo instead of assuming global cbmp details.
-if [ -f package-lock.json ]; then
-    npm ci
-elif [ -f package.json ]; then
-    npm install
-fi
-
-case "$STYLE" in
-    modern)
-        svg_dir="svg/modern"
-        ;;
-    original)
-        svg_dir="svg/original"
-        ;;
-    *)
-        echo "Unknown Bibata style: $STYLE" >&2
-        exit 1
-        ;;
-esac
-
 bitmap_dir="bitmaps/$NAME"
 
 rm -rf "$bitmap_dir" "themes/$NAME"
 
-npx cbmp \
-    -d "$svg_dir" \
-    -o "$bitmap_dir" \
-    -bc "$BASE" \
-    -oc "$OUTLINE" \
-    -wc "$WATCH"
+# Phase 1: customize SVG files
+if [ ! -f $RENDER_JSON ]; then
+    echo "Could not find render.json file at $RENDER_JSON" >&2
+    exit 1
+fi
+npx cbmp $RENDER_JSON
 
-if [ -f configs/normal/x.build.toml ]; then
-    build_toml="configs/normal/x.build.toml"
-elif [ -f build.toml ]; then
-    build_toml="build.toml"
-else
-    echo "Could not find Bibata ctgen build config" >&2
+# Phase 2: render to bitmaps (PNG)
+if [ ! -f $build_toml ]; then
+    echo "Could not find Bibata ctgen build config at $build_toml" >&2
     exit 1
 fi
 
 ctgen "$build_toml" \
-    -s "$SIZE" \
+    -o "themes" \
+    -s $SIZE \
     -p x11 \
     -d "$bitmap_dir" \
     -n "$NAME" \
-    -c "$NAME generated from Hyprland theme"
+    -c "$COMMENT - Generated from Hyprland theme"
 
 if [ ! -d "themes/$NAME" ]; then
     echo "Expected generated theme not found: themes/$NAME" >&2
     exit 1
 fi
 
+# Phase 3: install
 mkdir -p "$OUT"
 rm -rf "$OUT/$NAME"
 cp -a "themes/$NAME" "$OUT/$NAME"

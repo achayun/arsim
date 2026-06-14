@@ -203,7 +203,7 @@ return {
       theme = "Papirus-Dark"
   },
   cursor = {
-      theme = "Bibata-Modern-Classic",
+      theme = "Bibata-Gruvbox", -- "Bibata-Modern-Classic",
       size = 24
   },
   gtk = {
