@@ -9,6 +9,9 @@ filetype indent on
 " Unmap Q as ex mode
 map Q <Nop>
 
+" No mouse visual select
+:set mouse-=a
+
 " Search
 set ignorecase " Smart case search
 set smartcase  " needs both
