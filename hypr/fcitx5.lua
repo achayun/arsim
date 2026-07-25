@@ -1,0 +1,466 @@
+-- File: fcitx5.lua
+--
+-- Renderer for Fcitx5 Classic UI themes.
+-- Writes:
+--   ~/.local/share/fcitx5/themes/<theme>/theme.conf
+--   ~/.local/share/fcitx5/themes/<theme>/panel.svg
+--   ~/.local/share/fcitx5/themes/<theme>/highlight.svg
+--   ~/.local/share/fcitx5/themes/<theme>/radio.svg
+--   ~/.local/share/fcitx5/themes/<theme>/arrow.svg
+--
+-- Optionally updates:
+--   ~/.config/fcitx5/conf/classicui.conf
+--
+-- The generated theme follows the same basic shape as catppuccin/fcitx5:
+-- theme directory + theme.conf + optional image assets.
+
+local M = {}
+
+local function shquote(s)
+    return "'" .. tostring(s):gsub("'", "'\\''") .. "'"
+end
+
+local function dirname(path)
+    return tostring(path):match("^(.*)/[^/]+$") or "."
+end
+
+local function join(...)
+    local parts = { ... }
+    local out = tostring(parts[1] or "")
+
+    for i = 2, #parts do
+        local p = tostring(parts[i])
+        out = out:gsub("/+$", "") .. "/" .. p:gsub("^/+", "")
+    end
+
+    return out
+end
+
+local function write_file(path, content)
+    os.execute("mkdir -p " .. shquote(dirname(path)))
+
+    local f, err = io.open(path, "w")
+    if not f then
+        error("failed to open " .. path .. ": " .. tostring(err))
+    end
+
+    f:write(content)
+    f:close()
+end
+
+local function read_file(path)
+    local f = io.open(path, "r")
+    if not f then
+        return nil
+    end
+
+    local s = f:read("*a")
+    f:close()
+    return s
+end
+
+local function strip_hash(color)
+    return tostring(color or ""):gsub("^#", "")
+end
+
+local function hex6(color, fallback)
+    local hex = strip_hash(color or fallback or "#000000")
+
+    if #hex == 8 then
+        hex = hex:sub(1, 6)
+    end
+
+    if #hex ~= 6 or not hex:match("^[0-9a-fA-F]+$") then
+        error("fcitx5 color expects #rrggbb or #rrggbbaa, got: " .. tostring(color))
+    end
+
+    return "#" .. hex:lower()
+end
+
+local function clamp(x, lo, hi)
+    x = tonumber(x) or lo
+    if x < lo then return lo end
+    if x > hi then return hi end
+    return x
+end
+
+local function sanitize_name(s)
+    s = tostring(s or "Hypr-Fcitx5")
+    s = s:gsub("%s+", "-")
+    s = s:gsub("[^%w%._%-]", "-")
+    s = s:gsub("%-+", "-")
+    s = s:gsub("^%-", ""):gsub("%-$", "")
+    if s == "" then
+        s = "Hypr-Fcitx5"
+    end
+    return s
+end
+
+local function title_name(s)
+    s = tostring(s or "Hypr Fcitx5")
+    s = s:gsub("[_%-]+", " ")
+    return (s:gsub("(%S)(%S*)", function(a, b)
+        return a:upper() .. b:lower()
+    end))
+end
+
+local function font_family(style)
+    return (style.font and style.font.ui) or "Sans"
+end
+
+local function font_size(style, opts, key, default)
+    local fcitx = (style.fcitx5 or {})
+    local font = fcitx.font or {}
+    local size = font[key]
+
+    if size == nil and style.font and style.font.size then
+        size = style.font.size.gtk_pt or style.font.size.ui
+    end
+
+    return tonumber(size) or default
+end
+
+local function dpi_bool(v)
+    if v == false then
+        return "False"
+    end
+    return "True"
+end
+
+local function qsvg(s)
+    return tostring(s or "")
+        :gsub("&", "&amp;")
+        :gsub("<", "&lt;")
+        :gsub(">", "&gt;")
+        :gsub('"', "&quot;")
+end
+
+local function theme_config(style, opts)
+    opts = opts or {}
+    local fcitx = style.fcitx5 or {}
+    local c = style.color or {}
+    local metric = style.metric or {}
+    local border = metric.border or {}
+    local padding = metric.padding or {}
+
+    local name = M.theme_name(style, opts)
+    local display_name = opts.display_name or fcitx.display_name or title_name(name)
+    local author = opts.author or fcitx.author or "Hyprland generator"
+    local version = opts.version or fcitx.version or "1.0"
+    local description = opts.description or fcitx.description or (display_name .. " generated from Hyprland style")
+
+    local input_font_size = font_size(style, opts, "input", 13)
+    local menu_font_size = font_size(style, opts, "menu", 10)
+
+    local radius = tonumber(opts.radius or fcitx.radius or border.radius) or 0
+    local rounded = opts.rounded
+    if rounded == nil then
+        rounded = fcitx.rounded
+    end
+    if rounded == nil then
+        rounded = radius > 0
+    end
+
+    local spacing = tonumber(opts.spacing or fcitx.spacing) or 3
+
+    local bg = hex6(fcitx.bg or c.surface or c.bg_soft or c.bg)
+    local bg_alt = hex6(fcitx.bg_alt or c.surface_alt or c.surface or c.bg)
+    local fg = hex6(fcitx.fg or c.fg)
+    local selected_fg = hex6(fcitx.selected_fg or c.bg_hard or c.bg)
+    local accent = hex6(fcitx.accent or c.accent)
+    local accent_alt = hex6(fcitx.accent_alt or c.accent_alt or c.accent)
+    local input_bg = hex6(fcitx.input_bg or c.surface_high or c.surface_alt or c.surface or c.bg)
+    local separator = hex6(fcitx.separator or c.border or c.bg_hard or c.bg)
+
+    local image_panel = rounded and "Image=panel.svg" or "# Image=panel.svg"
+    local image_highlight = rounded and "Image=highlight.svg" or "# Image=highlight.svg"
+
+    return table.concat({
+        "# vim: ft=dosini",
+        "# Generated by ~/.config/hypr/fcitx5.lua",
+        "# Style: " .. tostring(style.name),
+        "",
+        "[Metadata]",
+        "Name=" .. display_name,
+        "Version=" .. tostring(version),
+        "Author=" .. tostring(author),
+        "Description=" .. description,
+        "ScaleWithDPI=" .. dpi_bool(fcitx.scale_with_dpi),
+        "",
+        "[InputPanel]",
+        "Font=" .. font_family(style) .. " " .. tostring(input_font_size),
+        "Spacing=" .. tostring(spacing),
+        "# Unselected candidate color",
+        "NormalColor=" .. fg,
+        "# Selected candidate text color",
+        "HighlightCandidateColor=" .. selected_fg,
+        "# Input/preedit text color",
+        "HighlightColor=" .. accent,
+        "# Input/preedit background color",
+        "HighlightBackgroundColor=" .. input_bg,
+        "",
+        "[InputPanel/TextMargin]",
+        "Left=" .. tostring(fcitx.text_margin_left or padding.x or 18),
+        "Right=" .. tostring(fcitx.text_margin_right or padding.x or 18),
+        "Top=" .. tostring(fcitx.text_margin_top or padding.y or 8),
+        "Bottom=" .. tostring(fcitx.text_margin_bottom or padding.y or 8),
+        "",
+        "[InputPanel/Background]",
+        "Color=" .. bg,
+        image_panel,
+        "",
+        "[InputPanel/Background/Margin]",
+        "Left=10",
+        "Right=10",
+        "Top=10",
+        "Bottom=10",
+        "",
+        "[InputPanel/Highlight]",
+        "Color=" .. accent,
+        image_highlight,
+        "",
+        "[InputPanel/Highlight/Margin]",
+        "Left=18",
+        "Right=18",
+        "Top=8",
+        "Bottom=8",
+        "",
+        "[Menu]",
+        "Font=" .. font_family(style) .. " " .. tostring(menu_font_size),
+        "NormalColor=" .. fg,
+        "Spacing=" .. tostring(spacing),
+        "",
+        "[Menu/Background]",
+        "Color=" .. bg_alt,
+        "",
+        "[Menu/Background/Margin]",
+        "Left=2",
+        "Right=2",
+        "Top=2",
+        "Bottom=2",
+        "",
+        "[Menu/ContentMargin]",
+        "Left=2",
+        "Right=2",
+        "Top=2",
+        "Bottom=2",
+        "",
+        "[Menu/Highlight]",
+        "Color=" .. accent_alt,
+        "",
+        "[Menu/Highlight/Margin]",
+        "Left=10",
+        "Right=10",
+        "Top=5",
+        "Bottom=5",
+        "",
+        "[Menu/Separator]",
+        "Color=" .. separator,
+        "",
+        "[Menu/CheckBox]",
+        "Image=radio.svg",
+        "",
+        "[Menu/SubMenu]",
+        "Image=arrow.svg",
+        "",
+        "[Menu/TextMargin]",
+        "Left=5",
+        "Right=5",
+        "Top=5",
+        "Bottom=5",
+        "",
+    }, "\n")
+end
+
+local function rounded_rect_svg(width, height, radius, fill, stroke, stroke_width)
+    width = tonumber(width) or 64
+    height = tonumber(height) or 64
+    radius = clamp(radius or 0, 0, math.min(width, height) / 2)
+    stroke_width = tonumber(stroke_width) or 0
+
+    local stroke_attr = ""
+    if stroke and stroke_width > 0 then
+        stroke_attr = string.format(' stroke="%s" stroke-width="%s"', qsvg(stroke), tostring(stroke_width))
+    end
+
+    return table.concat({
+        string.format('<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" viewBox="0 0 %d %d">', width, height, width, height),
+        string.format('  <rect x="0" y="0" width="%d" height="%d" rx="%s" ry="%s" fill="%s"%s/>', width, height, tostring(radius), tostring(radius), qsvg(fill), stroke_attr),
+        '</svg>',
+        '',
+    }, "\n")
+end
+
+local function radio_svg(style)
+    local c = style.color or {}
+    local fg = hex6(c.fg or "#ffffff")
+    local accent = hex6(c.accent or fg)
+    local bg = hex6(c.surface_alt or c.surface or c.bg or "#000000")
+
+    return table.concat({
+        '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">',
+        string.format('  <circle cx="8" cy="8" r="6" fill="%s" stroke="%s" stroke-width="1.5"/>', qsvg(bg), qsvg(fg)),
+        string.format('  <circle cx="8" cy="8" r="3" fill="%s"/>', qsvg(accent)),
+        '</svg>',
+        '',
+    }, "\n")
+end
+
+local function arrow_svg(style)
+    local c = style.color or {}
+    local fg = hex6(c.fg or "#ffffff")
+
+    return table.concat({
+        '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">',
+        string.format('  <path d="M6 4l5 4-5 4z" fill="%s"/>', qsvg(fg)),
+        '</svg>',
+        '',
+    }, "\n")
+end
+
+function M.theme_name(style, opts)
+    opts = opts or {}
+    local fcitx = style.fcitx5 or {}
+    return sanitize_name(opts.name or fcitx.theme or ("Hypr-" .. tostring(style.name or "Fcitx5")))
+end
+
+function M.theme_dir(style, opts)
+    opts = opts or {}
+    local home = os.getenv("HOME") or "."
+    local base = opts.base_dir
+        or (style.fcitx5 and style.fcitx5.base_dir)
+        or join(home, ".local/share/fcitx5/themes")
+
+    return join(base, M.theme_name(style, opts))
+end
+
+function M.conf(style, opts)
+    return theme_config(style, opts)
+end
+
+function M.assets(style, opts)
+    opts = opts or {}
+    local fcitx = style.fcitx5 or {}
+    local c = style.color or {}
+    local metric = style.metric or {}
+    local border = metric.border or {}
+
+    local radius = tonumber(opts.radius or fcitx.radius or border.radius) or 0
+    local rounded = opts.rounded
+    if rounded == nil then
+        rounded = fcitx.rounded
+    end
+    if rounded == nil then
+        rounded = radius > 0
+    end
+
+    local panel_radius = rounded and clamp(radius, 0, 16) or 0
+    local highlight_radius = rounded and clamp(radius, 0, 16) or 0
+
+    return {
+        ["panel.svg"] = rounded_rect_svg(
+            64,
+            64,
+            panel_radius,
+            hex6(fcitx.bg or c.surface or c.bg_soft or c.bg),
+            hex6(fcitx.border or c.border or c.border_subtle or c.bg),
+            tonumber(fcitx.border_width or border.width) or 1
+        ),
+        ["highlight.svg"] = rounded_rect_svg(
+            64,
+            64,
+            highlight_radius,
+            hex6(fcitx.accent or c.accent),
+            nil,
+            0
+        ),
+        ["radio.svg"] = radio_svg(style),
+        ["arrow.svg"] = arrow_svg(style),
+    }
+end
+
+function M.write_theme(style, opts, path)
+    opts = opts or {}
+    path = path or M.theme_dir(style, opts)
+
+    os.execute("rm -rf " .. shquote(path))
+    os.execute("mkdir -p " .. shquote(path))
+
+    write_file(join(path, "theme.conf"), M.conf(style, opts))
+
+    for name, content in pairs(M.assets(style, opts)) do
+        write_file(join(path, name), content)
+    end
+
+    return path
+end
+
+function M.classicui_conf(theme, existing)
+    theme = M.theme_name({ fcitx5 = { theme = theme } })
+    existing = existing or ""
+
+    if existing == "" then
+        return table.concat({
+            "# Generated by ~/.config/hypr/fcitx5.lua",
+            "Theme=" .. theme,
+            "",
+        }, "\n")
+    end
+
+    if existing:match("\n?Theme%s*=") then
+        local replaced = existing:gsub("([\r\n]?)Theme%s*=[^\r\n]*", "%1Theme=" .. theme, 1)
+        if not replaced:match("\n$") then
+            replaced = replaced .. "\n"
+        end
+        return replaced
+    end
+
+    if not existing:match("\n$") then
+        existing = existing .. "\n"
+    end
+
+    return existing .. "Theme=" .. theme .. "\n"
+end
+
+function M.write_classicui(style, opts, path)
+    opts = opts or {}
+    path = path
+        or opts.classicui_path
+        or (style.fcitx5 and style.fcitx5.classicui_path)
+        or join(os.getenv("HOME") or ".", ".config/fcitx5/conf/classicui.conf")
+
+    local theme = M.theme_name(style, opts)
+    local existing = read_file(path) or ""
+    write_file(path, M.classicui_conf(theme, existing))
+    return path
+end
+
+function M.write(style, opts, path)
+    opts = opts or {}
+    local theme_path = M.write_theme(style, opts, path)
+
+    if opts.set_default or (style.fcitx5 and style.fcitx5.set_default) then
+        M.write_classicui(style, opts)
+    end
+
+    return theme_path
+end
+
+function M.apply(style, opts)
+    opts = opts or {}
+    opts.set_default = true
+
+    local theme_path = M.write(style, opts)
+
+    -- Reload Fcitx5 if it is already running. Do not make this fatal; theme
+    -- generation should not fail merely because fcitx5 is not running yet.
+    if opts.restart ~= false then
+        os.execute("fcitx5 -r >/dev/null 2>&1 || true")
+    end
+
+    return theme_path
+end
+
+return M
+
+

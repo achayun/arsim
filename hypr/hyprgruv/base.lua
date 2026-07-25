@@ -232,5 +232,37 @@ return {
       gtk_theme = "Adwaita-dark",
       color_scheme = "prefer-dark",
       icon_theme = "Papirus-Dark"
+  },
+  fcitx5 = {
+      theme = "Hypr-Gruvbox-Fcitx5",
+      display_name = "Hypr Gruvbox Fcitx5",
+      author = "Ami Chayun / Hyprland generator",
+      version = "1.0",
+      description = "Generated from the active Hyprland Gruvbox style",
+
+      -- When true, write ~/.config/fcitx5/conf/classicui.conf Theme=<theme>.
+      -- For pure generation only, keep false and call fcitx5.apply(style) manually.
+      set_default = false,
+
+      -- Fcitx5 Classic UI uses Pango-ish font strings such as "Sans 13".
+      font = {
+          input = 13,
+          menu = 10,
+      },
+
+      spacing = 3,
+      rounded = true,
+      radius = 6,
+      scale_with_dpi = true,
+
+      -- Optional overrides. Omit these to use style.color roles.
+      bg = c.dark0_soft,
+      bg_alt = c.dark1,
+      fg = c.light1,
+      selected_fg = c.dark0_hard,
+      accent = c.yellow,
+      accent_alt = c.orange,
+      input_bg = c.dark2,
+      separator = c.dark0_hard,
   }
 }

@@ -20,7 +20,7 @@ hl.bind(mainMod .. " + CTRL + B", hl.dsp.exec_cmd("google-chrome-stable"), { des
 -- -- Run programs, call commands --
 hl.bind(mainMod .. " + CTRL + P", hl.dsp.exec_cmd("keepassxc"), { description = "🔐passwords" })
 
--- Bind to Super+V (Standard for clipboards)
+-- Bind to Super+C/Super+V as universal copy/paste
 hl.bind(mainMod .. " + V", hl.dsp.exec_cmd("cliphist list | wofi --dmenu | cliphist decode | wl-copy"), { description = "Open clipboard manager" })
 
 -- Screenshot a region to clipboard
@@ -36,17 +36,14 @@ hl.bind(mainMod .. " + ALT + Escape", hl.dsp.exec_cmd("nwgbar"), { description =
 
 -- -- Workspaces --
 -- --- Workspace Navigation ---
-local workspaces = { "1", "2", "3", "4", "5", "9", "name:Q", "name:W", "name:E", "name:A", "name:S" }
+local workspaces = { "1", "2", "3", "4", "5", "6", "7", "8", "9" }
 
 for _, ws in ipairs(workspaces) do
-    -- Extract the key from the workspace name (e.g., "name:Q" -> "Q", "1" -> "1")
-    local key = ws:match("name:(.*)") or ws
-
     -- Switch to workspace
-    hl.bind(mainMod .. " + " .. key, hl.dsp.focus({ workspace = ws }), { description = "Switch to workspace " .. key })
+    hl.bind(mainMod .. " + " .. ws, hl.dsp.focus({ workspace = ws }), { description = "Switch to workspace " .. ws })
 
     -- Move active window to workspace
-    hl.bind(mainMod .. " + SHIFT + " .. key, hl.dsp.window.move({ workspace = ws }), { description = "Move window to workspace " .. key })
+    hl.bind(mainMod .. " + SHIFT + " .. ws, hl.dsp.window.move({ workspace = ws }), { description = "Move window to workspace " .. ws })
 end
 
 -- Cycle through existing workspaces
@@ -56,6 +53,21 @@ hl.bind(mainMod .. " + SHIFT + Tab", hl.dsp.focus({ workspace = "e-1" }), { desc
 -- Window control
 hl.bind(mainMod .. " + ALT + F", hl.dsp.window.fullscreen(0), { description = "fullscreen window (toggle)" })
 hl.bind(mainMod .. " + ALT + Q", hl.dsp.window.close(), { description = "close active window" })
+
+-- Close floating on whitelisted 'utlity' class windows with ESC.
+hl.bind("Escape", function()
+    local escape_closes = {
+        ["org.pulseaudio.pavucontrol"] = true,
+        ["pavucontrol"] = true,
+    }
+    local w = hl.get_active_window()
+    if w ~= nil and w.floating and escape_closes[w.class] then
+        hl.dispatch(hl.dsp.window.close({ window = w }))
+    end
+end, {
+    non_consuming = true,
+    description = "Close floating window",
+})
 
 -- Move windows with mainMod + SHIFT + [vim-style HJKL]
 hl.bind(mainMod .. " + SHIFT + H", hl.dsp.window.move({ direction = "l" }), { description = "move window left" })

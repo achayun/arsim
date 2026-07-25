@@ -163,12 +163,12 @@ function M.compile_bibata_cursor(style)
   local path = M.write_render_json(cfg)
   local script_dir = current_script_dir()
   local theme_path = script_dir .. "/icons/bibata_cursor"
-
-  hl.exec_cmd(string.format(
-    "make -C %s cursor-build RENDER_JSON=%s",
-    shell_quote(theme_path),
-    shell_quote(path)
-  ))
+  -- TODO: Pass output dir to the `make` command. It currently crashes on login. run.sh should write to some log file...
+  -- hl.exec_cmd(string.format(
+  --   "make -C %s cursor-build RENDER_JSON=%s",
+  --   shell_quote(theme_path),
+  --   shell_quote(path)
+  -- ))
 end
 
 function M.apply(style)
@@ -180,11 +180,11 @@ function M.apply(style)
     -- Xcursor (Hyprcusror) env
     hl.env("XCURSOR_THEME", style.cursor.theme)
     hl.env("XCURSOR_SIZE", style.cursor.size)
-    -- Hyprcursor Apply switch
-    hl.exec_cmd(string.format([["hyprctl setcursor %s %d"]], style.cursor.theme, style.cursor.size))
     -- GTK cursor
     hl.exec_cmd(string.format([["gsettings set org.gnome.desktop.interface cursor-theme '%s'"]], style.cursor.theme))
     hl.exec_cmd(string.format([["gsettings set org.gnome.desktop.interface cursor-size %d"]], style.cursor.size))
+    -- Hyprcursor Apply switch
+    hl.exec_cmd(string.format([["hyprctl setcursor %s %d"]], style.cursor.theme, style.cursor.size))
 end
 
 return M

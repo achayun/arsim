@@ -11,14 +11,16 @@ require("start")
 require("bind")
 require("input")
 require("window")
+require("devices")
 
 -- Specific application classes behavior
 require("tools")
 require("steam")
 
 -- Look and feel
-local theme = require("hyprgruv/base")
+-- local theme = require("hyprgruv/base")
 -- local theme = require("hyprgruv/accents/orange_yellow")
+local theme = require("hyprgruv/accents/blue_aqua")
 -- local theme = require("hyprgruv/accents/green_teal")
 local style = require("style")
 local waybar = require("waybar")
@@ -47,7 +49,7 @@ end
 
 if starts_with(browser, "google-chrome") then
     local chrome_wallpaper = {
-        path = os.getenv("HOME") .. "/.config/hypr/hyprgruv/wallpapers/cartographer.png",
+        path = os.getenv("HOME") .. "/.config/hypr/hyprgruv/wallpapers/footer_lodyas.png",
         repeat_policy = "repeat", -- "no-repeat", "repeat", "repeat-x", "repeat-y"
         -- alignment = "bottom",        -- "center", "bottom", "top", etc.
         logo_alternate = 1,

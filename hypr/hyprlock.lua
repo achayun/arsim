@@ -100,7 +100,7 @@ function M.conf(style, opts)
         "",
         "general {",
         "    hide_cursor = true",
-        "    ignore_empty_input = true",
+        "    ignore_empty_input = false", -- DO NOT ignore empty input if you want Yubikey integration etc.
         "    immediate_render = true",
         "    text_trim = true",
         "}",

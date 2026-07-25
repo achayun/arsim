@@ -2,7 +2,7 @@
 hl.window_rule({
 	name = "steam-ws",
 	match = { class = "^steam", },
-	workspace = "name:S"
+	workspace = "8" -- TODO: Use a name
 })
 
 -- Steam - Sign in window should float
